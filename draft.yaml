@@ -1,5 +1,49 @@
 models:
   # ...
+  User:
+    id: unsignedInteger autoIncrement primary
+    firstname: string:150
+    lastname: string:150
+    email: string:150
+    email_verified_at: timestamp nullable
+    phone: string:40 nullable
+    lang: string:2 default:'fr'
+    country: string:3 nullable
+    city: string:50 nullable
+    zip: string:10 nullable
+    street: string:200 nullable
+    street_number: string:7 nullable
+    street_box: string:7 nullable
+    avatar: string:200 nullable
+    more_info: string:nullable
+    password: string:150
+    remember_token: string:100 nullable
+    code: string:25 nullable
+    active: boolean default:false
+    optin_newsletter: boolean default:false
+    company_id: unsignedInteger nullable
+    relationships:
+      hasOne: Company
+    # ...
+  Company:
+    id: unsignedInteger autoIncrement primary
+    name: string:150
+    vat: string:25 nullable
+    phone: string:40 nullable
+    email: string:150
+    country: string:3 nullable
+    city: string:50 nullable
+    zip: string:10 nullable
+    street: string:200 nullable
+    street_number: string:7 nullable
+    street_box: string:7 nullable
+    active: boolean default:false
+    is_agency: boolean default:false
+    partner: string:50 nullable
 
-controllers:
-  # ...
+  UserRole:
+    id: unsignedInteger autoIncrement primary
+    user_id: unsignedInteger
+    role: enum:viewer,agency,admin
+    relationships:
+      belongsTo: User
