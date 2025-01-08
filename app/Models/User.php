@@ -3,10 +3,11 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Filament\Models\Contracts\HasName;
 
-class User extends Model
+class User extends Authenticatable implements HasName
 {
     use HasFactory;
 
@@ -31,5 +32,10 @@ class User extends Model
     public function company(): HasOne
     {
         return $this->hasOne(Company::class);
+    }
+    
+    public function getFilamentName(): string
+    {
+        return $this->getAttributeValue('firstname') . ' ' . $this->getAttributeValue('lastname');
     }
 }
