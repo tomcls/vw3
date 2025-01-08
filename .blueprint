@@ -1,4 +1,14 @@
+created:
+    - database/factories/UserFactory.php
+    - database/factories/CompanyFactory.php
+    - database/factories/UserRoleFactory.php
+    - database/migrations/2025_01_08_131038_create_users_table.php
+    - database/migrations/2025_01_08_131039_create_companies_table.php
+    - database/migrations/2025_01_08_131040_create_user_roles_table.php
+    - app/Models/User.php
+    - app/Models/Company.php
+    - app/Models/UserRole.php
 models:
-    User: { id: 'unsignedInteger autoIncrement primary', firstname: 'string:150', lastname: 'string:150', email: 'string:150', email_verified_at: 'timestamp nullable', phone: 'string:40 nullable', lang: "string:2 default:'fr'", country: 'string:3 nullable', city: 'string:50 nullable', zip: 'string:10 nullable', street: 'string:200 nullable', street_number: 'string:7 nullable', street_box: 'string:7 nullable', avatar: 'string:200 nullable', more_info: 'string:nullable', password: 'string:150', remember_token: 'string:100 nullable', code: 'string:25 nullable', active: 'boolean default:false', optin_newsletter: 'boolean default:false', company_id: 'unsignedInteger nullable', relationships: { hasOne: Company } }
+    User: { id: 'unsignedInteger autoIncrement primary', firstname: 'string:150', lastname: 'string:150', email: 'string:150', email_verified_at: 'timestamp nullable', phone: 'string:40 nullable', lang: "string:2 default:'fr'", country: 'string:3 nullable', city: 'string:50 nullable', zip: 'string:10 nullable', street: 'string:200 nullable', street_number: 'string:7 nullable', street_box: 'string:7 nullable', avatar: 'string:200 nullable', more_info: 'string nullable', password: 'string:150', remember_token: 'string:100 nullable', code: 'string:25 nullable', active: 'boolean default:false', optin_newsletter: 'boolean default:false', company_id: 'unsignedInteger nullable', relationships: { hasOne: Company } }
     Company: { id: 'unsignedInteger autoIncrement primary', name: 'string:150', vat: 'string:25 nullable', phone: 'string:40 nullable', email: 'string:150', country: 'string:3 nullable', city: 'string:50 nullable', zip: 'string:10 nullable', street: 'string:200 nullable', street_number: 'string:7 nullable', street_box: 'string:7 nullable', active: 'boolean default:false', is_agency: 'boolean default:false', partner: 'string:50 nullable' }
     UserRole: { id: 'unsignedInteger autoIncrement primary', user_id: unsignedInteger, role: 'enum:viewer,agency,admin', relationships: { belongsTo: User } }

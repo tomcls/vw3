@@ -15,7 +15,7 @@ models:
     street_number: string:7 nullable
     street_box: string:7 nullable
     avatar: string:200 nullable
-    more_info: string:nullable
+    more_info: string nullable
     password: string:150
     remember_token: string:100 nullable
     code: string:25 nullable
