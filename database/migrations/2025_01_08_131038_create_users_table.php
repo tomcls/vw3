@@ -34,6 +34,8 @@ return new class extends Migration
             $table->boolean('optin_newsletter')->default(false);
             $table->unsignedInteger('company_id')->nullable();
             $table->timestamps();
+
+            $table->foreign('company_id')->references('id')->on('companies')->onUpdate('cascade')->onDelete('set null');
         });
     }
 

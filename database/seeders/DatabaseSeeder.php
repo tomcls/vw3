@@ -28,6 +28,8 @@ class DatabaseSeeder extends Seeder
             'firstname' => 'Thomas',
             'email' => 'thomas.claessens@immovlan.be',
             'password' => bcrypt('password'),
+            'company_id' => null,
+            'avatar' => null
         ]);
     }
 }
