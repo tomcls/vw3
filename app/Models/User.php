@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\UserRoleEnum;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\Select;
@@ -13,12 +14,14 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Filament\Models\Contracts\HasName;
 use Filament\Forms;
+use Filament\Forms\Components\Group;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Hash;
 
 class User extends Authenticatable implements HasName
- {
-       use HasFactory;
+{
+    use HasFactory;
 
     /**
      * The attributes that should be hidden for serialization.
@@ -45,6 +48,10 @@ class User extends Authenticatable implements HasName
     public static function getForm()
     {
         return [
+            Toggle::make('active')
+                ->required(),
+                Toggle::make('optin_newsletter')
+                    ->required(),
             TextInput::make('firstname')
                 ->label('First Name')
                 ->helperText('Please enter your first name!!')
@@ -90,21 +97,15 @@ class User extends Authenticatable implements HasName
             TextInput::make('avatar')
                 ->maxLength(200)
                 ->default(null),
-            MarkdownEditor::make('more_info')
-                ->disableToolbarButtons(['heading', 'bold', 'italic', 'underline', 'strike', 'link', 'bulletedList', 'numberedList', 'alignment', 'blockQuote', 'codeBlock', 'horizontalLine', 'image', 'table', 'undo', 'redo', 'removeFormat'])
-                ->maxLength(255)
-                ->default(null),
             TextInput::make('password')
                 ->password()
-                ->required()
+                ->dehydrateStateUsing(fn($state) => Hash::make($state))
+                ->dehydrated(fn($state) => filled($state))
+                ->required(fn(string $context): bool => $context === 'create')
                 ->maxLength(150),
             TextInput::make('code')
                 ->maxLength(25)
                 ->default(null),
-            Toggle::make('active')
-                ->required(),
-            Toggle::make('optin_newsletter')
-                ->required(),
             Select::make('company_id')
                 // // ->options(
                 // //     Company::all()->pluck('name', 'id')->toArray()
@@ -119,9 +120,16 @@ class User extends Authenticatable implements HasName
                 //      return $q;
                 //  })
                 ->searchable()
-                ->getSearchResultsUsing(fn (string $search): array => Company::where('name', 'like', "%{$search}%")->limit(50)->pluck('name', 'id')->toArray())
-                ->getOptionLabelUsing(fn ($value): ?string => Company::find($value)?->name),
-                    ];
+                ->getSearchResultsUsing(fn(string $search): array => Company::where('name', 'like', "%{$search}%")->limit(50)->pluck('name', 'id')->toArray())
+                ->getOptionLabelUsing(fn($value): ?string => Company::find($value)?->name),
+            Select::make('role')
+                ->enum(UserRoleEnum::class)
+                ->options(UserRoleEnum::class),
+            MarkdownEditor::make('more_info')
+                    ->disableToolbarButtons(['heading', 'bold', 'italic', 'underline', 'strike', 'link', 'bulletedList', 'numberedList', 'alignment', 'blockQuote', 'codeBlock', 'horizontalLine', 'image', 'table', 'undo', 'redo', 'removeFormat'])
+                    ->maxLength(255)
+                    ->default(null)
+        ];
     }
     public function getFilamentName(): string
     {
