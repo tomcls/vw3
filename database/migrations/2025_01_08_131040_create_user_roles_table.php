@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('user_id');
             $table->enum('role', ["viewer","agency","admin"]);
             $table->timestamps();
+            $table->unique(['user_id', 'role']);
         });
     }
 

@@ -17,6 +17,7 @@ use Filament\Forms;
 use Filament\Forms\Components\Group;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Hash;
 
 class User extends Authenticatable implements HasName
@@ -44,6 +45,10 @@ class User extends Authenticatable implements HasName
     public function company(): BelongsTo
     {
         return $this->BelongsTo(Company::class);
+    }
+    public function roles ():hasMany
+    {
+         return $this->hasMany(UserRole::class);
     }
     public static function getForm()
     {

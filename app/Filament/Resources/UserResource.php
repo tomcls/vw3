@@ -6,11 +6,18 @@ use App\Filament\Resources\UserResource\Pages;
 use App\Filament\Resources\UserResource\RelationManagers;
 use App\Models\User;
 use Filament\Forms;
+use Filament\Infolists\Components\Group;
 use Filament\Forms\Form;
+use Filament\Infolists\Components\Group as ComponentsGroup;
+use Filament\Infolists\Components\ImageEntry;
+use Filament\Infolists\Components\Section;
+use Filament\Infolists\Components\TextEntry;
+use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class UserResource extends Resource
@@ -81,6 +88,7 @@ class UserResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\ViewAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -88,11 +96,53 @@ class UserResource extends Resource
                 ]),
             ]);
     }
+    public static function infoList(Infolist $infoList): Infolist
+    {
+        return $infoList
+            ->schema([
+                Section::make('Personal Information')
+                    ->columns(3)
+                    ->schema([
+                        ImageEntry::make('avatar')
+                            ->circular(),
+                        Group::make()
+                            ->columnSpan(2)
+                            ->columns(2)
+                            ->schema([
+                                TextEntry::make('firstname'),
+                                TextEntry::make('lastname'),
+                                TextEntry::make('email'),
+                            ])
 
+                            ]),
+                    Section::make('Other infos')
+                    ->schema([
+                        Group::make()
+                            ->columns(2)
+                            ->schema([
+                                TextEntry::make('phone'),
+                                TextEntry::make('lang'),
+                                TextEntry::make('country'),
+                                TextEntry::make('city'),
+                                TextEntry::make('zip'),
+                                TextEntry::make('street'),
+                                TextEntry::make('street_number'),
+                                TextEntry::make('street_box'),
+                                TextEntry::make('more_info'),
+                                TextEntry::make('code'),
+                                TextEntry::make('active'),
+                                TextEntry::make('optin_newsletter'),
+                                TextEntry::make('company_id'),
+                                TextEntry::make('created_at'),
+                                TextEntry::make('updated_at'),
+                            ]),
+                    ])
+            ]);
+    }
     public static function getRelations(): array
     {
         return [
-            //
+            RelationManagers\RolesRelationManager::class,
         ];
     }
 
@@ -101,7 +151,8 @@ class UserResource extends Resource
         return [
             'index' => Pages\ListUsers::route('/'),
             'create' => Pages\CreateUser::route('/create'),
-            'edit' => Pages\EditUser::route('/{record}/edit'),
+           // 'edit' => Pages\EditUser::route('/{record}/edit'),
+            'view' => Pages\ViewUser::route('/{record}'),
         ];
     }
 }
