@@ -14,11 +14,13 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Filament\Models\Contracts\HasName;
 use Filament\Forms;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Group;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Hash;
+use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 
 class User extends Authenticatable implements HasName
 {
@@ -104,9 +106,15 @@ class User extends Authenticatable implements HasName
             TextInput::make('street_box')
                 ->maxLength(7)
                 ->default(null),
-            TextInput::make('avatar')
-                ->maxLength(200)
-                ->default(null),
+            FileUpload::make('avatar')
+                ->maxSize(1024*1024 * 50)
+                ->avatar()
+                ->directory('avatars')
+                ->imageEditor()
+                ->default(null)
+                ->getUploadedFileNameForStorageUsing(
+                    fn (TemporaryUploadedFile $file): string => (string) str(md5($file->getClientOriginalName()).'.'.$file->extension()),
+                ),
             TextInput::make('password')
                 ->password()
                 ->dehydrateStateUsing(fn($state) => Hash::make($state))

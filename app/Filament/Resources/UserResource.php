@@ -112,22 +112,29 @@ class UserResource extends Resource
                                 TextEntry::make('firstname'),
                                 TextEntry::make('lastname'),
                                 TextEntry::make('email'),
+                                TextEntry::make('phone'),
                             ])
 
                             ]),
-                    Section::make('Other infos')
+                    Section::make('Location')
                     ->schema([
                         Group::make()
                             ->columns(2)
                             ->schema([
-                                TextEntry::make('phone'),
-                                TextEntry::make('lang'),
                                 TextEntry::make('country'),
                                 TextEntry::make('city'),
                                 TextEntry::make('zip'),
                                 TextEntry::make('street'),
                                 TextEntry::make('street_number'),
                                 TextEntry::make('street_box'),
+                            ]),
+                    ]),
+                    Section::make('Other infos')
+                    ->schema([
+                        Group::make()
+                            ->columns(2)
+                            ->schema([
+                                TextEntry::make('lang'),
                                 TextEntry::make('more_info'),
                                 TextEntry::make('code'),
                                 TextEntry::make('active'),
