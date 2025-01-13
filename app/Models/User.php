@@ -44,8 +44,13 @@ class User extends Authenticatable implements HasName
 
     public function company(): BelongsTo
     {
-        return $this->BelongsTo(Company::class);
+        return $this->BelongsTo(Company::class, 'company_id','id');
     }
+    // public function company(): HasOne
+    // {
+    //     return $this->hasOne(Company::class, 'id','company_id');
+    // }
+    
     public function roles ():hasMany
     {
          return $this->hasMany(UserRole::class);
