@@ -122,9 +122,6 @@ class User extends Authenticatable implements HasName
                 ->searchable()
                 ->getSearchResultsUsing(fn(string $search): array => Company::where('name', 'like', "%{$search}%")->limit(50)->pluck('name', 'id')->toArray())
                 ->getOptionLabelUsing(fn($value): ?string => Company::find($value)?->name),
-            Select::make('role')
-                ->enum(UserRoleEnum::class)
-                ->options(UserRoleEnum::class),
             MarkdownEditor::make('more_info')
                     ->disableToolbarButtons(['heading', 'bold', 'italic', 'underline', 'strike', 'link', 'bulletedList', 'numberedList', 'alignment', 'blockQuote', 'codeBlock', 'horizontalLine', 'image', 'table', 'undo', 'redo', 'removeFormat'])
                     ->maxLength(255)
