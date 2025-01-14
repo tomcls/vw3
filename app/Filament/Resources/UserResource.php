@@ -8,6 +8,7 @@ use App\Models\User;
 use Filament\Forms;
 use Filament\Infolists\Components\Group;
 use Filament\Forms\Form;
+use Filament\Infolists\Components\Fieldset;
 use Filament\Infolists\Components\Group as ComponentsGroup;
 use Filament\Infolists\Components\ImageEntry;
 use Filament\Infolists\Components\Section;
@@ -101,6 +102,44 @@ class UserResource extends Resource
         return $infoList
             ->schema([
                 Section::make('Personal Information')
+                    ->description('User ID: #' . $infoList->record->id)
+                    ->columns(2)
+                    ->schema([
+                        Group::make()
+                            ->columns(3)
+                            ->schema([
+                                TextEntry::make('active')
+                                    ->getStateUsing(function ($record) {
+                                        return $record->active
+                                            > 0 ? 'Active' : 'Not active';
+                                    })
+                                    ->badge()
+                                    ->color(function ($state) {
+                                        if ($state == 'Active') {
+                                            return 'success';
+                                        }
+                                        return 'danger';
+                                    }),
+                                TextEntry::make('optin_newsletter')
+                                    ->getStateUsing(function ($record) {
+                                        return $record->optin_newsletter
+                                            > 0 ? 'Yes' : 'No';
+                                    })
+                                    ->badge()
+                                    ->color(function ($state) {
+                                        if ($state) {
+                                            return 'success';
+                                        }
+                                        return 'danger';
+                                    }),
+                                TextEntry::make('lang')
+                                    ->formatStateUsing(function(string $state){
+                                        logger(__($state));
+                                        return __($state);
+                                    }),
+                            ]),
+                    ]),
+                Section::make('Personal Information')
                     ->columns(3)
                     ->schema([
                         ImageEntry::make('avatar')
@@ -115,21 +154,25 @@ class UserResource extends Resource
                                 TextEntry::make('phone'),
                             ])
 
-                            ]),
-                    Section::make('Location')
+                    ]),
+                Section::make('Location')
                     ->schema([
                         Group::make()
-                            ->columns(2)
+                            ->columns(3)
                             ->schema([
                                 TextEntry::make('country'),
-                                TextEntry::make('city'),
+                                TextEntry::make('city')->label(' City'),
                                 TextEntry::make('zip'),
-                                TextEntry::make('street'),
-                                TextEntry::make('street_number'),
-                                TextEntry::make('street_box'),
+                            ]),
+                        Group::make()
+                            ->columns(3)
+                            ->schema([
+                                TextEntry::make('street')
+                                    ->label('Address')
+                                    ->formatStateUsing(fn(string $state): string => $infoList->record->street . ' ' . $infoList->record->street_number . ' ' . $infoList->record->street_box),
                             ]),
                     ]),
-                    Section::make('Other infos')
+                Section::make('Other infos')
                     ->schema([
                         Group::make()
                             ->columns(2)
@@ -137,8 +180,6 @@ class UserResource extends Resource
                                 TextEntry::make('lang'),
                                 TextEntry::make('more_info'),
                                 TextEntry::make('code'),
-                                TextEntry::make('active'),
-                                TextEntry::make('optin_newsletter'),
                                 TextEntry::make('company_id'),
                                 TextEntry::make('created_at'),
                                 TextEntry::make('updated_at'),
@@ -159,7 +200,7 @@ class UserResource extends Resource
         return [
             'index' => Pages\ListUsers::route('/'),
             'create' => Pages\CreateUser::route('/create'),
-           // 'edit' => Pages\EditUser::route('/{record}/edit'),
+            // 'edit' => Pages\EditUser::route('/{record}/edit'),
             'view' => Pages\ViewUser::route('/{record}'),
         ];
     }
