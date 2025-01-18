@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\LangEnum;
 use App\Enums\UserRoleEnum;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\MarkdownEditor;
@@ -46,85 +47,152 @@ class User extends Authenticatable implements HasName
 
     public function company(): BelongsTo
     {
-        return $this->BelongsTo(Company::class, 'company_id','id');
+        return $this->BelongsTo(Company::class, 'company_id', 'id');
     }
     // public function company(): HasOne
     // {
     //     return $this->hasOne(Company::class, 'id','company_id');
     // }
-    
-    public function roles ():hasMany
+
+    public function roles(): hasMany
     {
-         return $this->hasMany(UserRole::class);
+        return $this->hasMany(UserRole::class);
     }
-    public static function getForm()
+    public static function getForm($userId = null)
     {
         return [
+
+            FileUpload::make('avatar')
+                ->alignCenter()
+                ->hiddenLabel()
+                ->maxSize(1024 * 1024 * 50)
+                ->avatar()
+                ->directory('avatars')
+                ->imageEditor()
+                ->default(null)
+                ->getUploadedFileNameForStorageUsing(
+                    fn(TemporaryUploadedFile $file): string => (string) str(md5($file->getClientOriginalName()) . '.' . $file->extension()),
+                )->columnSpan('full'),
             Toggle::make('active')
-                ->required(),
-                Toggle::make('optin_newsletter')
-                    ->required(),
+                ->label('Active')
+                ->required()
+                ->columnSpan([
+                    'default' => 1,
+                    'sm' => 2,
+                    'xl' => 2,
+                    '2xl' => 2,
+                ]),
+            Toggle::make('optin_newsletter')
+            ->label('newletter')
+                ->required()
+                ->columnSpan([
+                    'default' => 1,
+                    'sm' => 2,
+                    'xl' => 2,
+                    '2xl' => 2,
+                ]),
+
             TextInput::make('firstname')
                 ->label('First Name')
                 ->helperText('Please enter your first name!!')
                 ->prefixIcon('heroicon-s-user')
                 ->hint('This is the first name of the user!!!!')
                 ->required()
-                ->maxLength(150),
+                ->maxLength(150)
+                ->columnSpan([
+                    'default' => 'full',
+                    'sm' => 2,
+                    'xl' => 2,
+                    '2xl' => 2,
+                ]),
             TextInput::make('lastname')
                 ->label('Last Name')
                 ->required()
-                ->maxLength(150),
+                ->maxLength(150)
+                ->columnSpan([
+                    'default' => 'full',
+                    'sm' => 2,
+                    'xl' => 2,
+                    '2xl' => 2,
+                ]),
             TextInput::make('email')
                 ->email()
                 ->required()
-                ->maxLength(150),
-            DateTimePicker::make('email_verified_at'),
+                ->maxLength(150)
+                ->columnSpan([
+                    'default' => 'full',
+                    'sm' => 2,
+                    'xl' => 2,
+                    '2xl' => 2,
+                ]),
+
             TextInput::make('phone')
                 ->tel()
                 ->maxLength(40)
-                ->default(null),
-            TextInput::make('lang')
-                ->required()
-                ->maxLength(2)
-                ->default('fr'),
-            TextInput::make('country')
-                ->maxLength(3)
-                ->default(null),
-            TextInput::make('city')
-                ->maxLength(50)
-                ->default(null),
-            TextInput::make('zip')
-                ->maxLength(10)
-                ->default(null),
+                ->default(null)
+                ->columnSpan([
+                    'default' => 'full',
+                    'sm' => 2,
+                    'xl' => 2,
+                    '2xl' => 2,
+                ]),
             TextInput::make('street')
                 ->maxLength(200)
-                ->default(null),
+                ->default(null)
+                ->columnSpan([
+                    'default' => 'full',
+                    'sm' => 2,
+                    'xl' => 2,
+                    '2xl' => 2,
+                ]),
             TextInput::make('street_number')
                 ->maxLength(7)
-                ->default(null),
+                ->default(null)
+                ->columnSpan([
+                    'default' => 1,
+                    'sm' => 1,
+                    'xl' => 1,
+                    '2xl' => 1,
+                ]),
             TextInput::make('street_box')
                 ->maxLength(7)
-                ->default(null),
-            FileUpload::make('avatar')
-                ->maxSize(1024*1024 * 50)
-                ->avatar()
-                ->directory('avatars')
-                ->imageEditor()
                 ->default(null)
-                ->getUploadedFileNameForStorageUsing(
-                    fn (TemporaryUploadedFile $file): string => (string) str(md5($file->getClientOriginalName()).'.'.$file->extension()),
-                ),
-            TextInput::make('password')
-                ->password()
-                ->dehydrateStateUsing(fn($state) => Hash::make($state))
-                ->dehydrated(fn($state) => filled($state))
-                ->required(fn(string $context): bool => $context === 'create')
-                ->maxLength(150),
-            TextInput::make('code')
-                ->maxLength(25)
-                ->default(null),
+                ->columnSpan([
+                    'default' => 1,
+                    'sm' => 1,
+                    'xl' => 1,
+                    '2xl' => 1,
+                ]),
+            TextInput::make('country')
+                ->maxLength(3)
+                ->default(null)
+                ->columnSpan([
+                    'default' => 1,
+                    'sm' => 1,
+                    'xl' => 1,
+                    '2xl' => 1,
+                ]),
+            TextInput::make('city')
+                ->maxLength(50)
+                ->default(null)
+                ->columnSpan([
+                    'default' => 1,
+                    'sm' => 1,
+                    'xl' => 1,
+                    '2xl' => 1,
+                ]),
+            TextInput::make('zip')
+                ->maxWidth('xs')
+                ->maxLength(10)
+                ->default(null)
+                ->columnSpan([
+                    'default' => 1,
+                    'sm' => 1,
+                    'xl' => 1,
+                    '2xl' => 1,
+                ]),
             Select::make('company_id')
+                ->columnSpan('full')
                 // // ->options(
                 // //     Company::all()->pluck('name', 'id')->toArray()
                 // // )
@@ -138,12 +206,51 @@ class User extends Authenticatable implements HasName
                 //      return $q;
                 //  })
                 ->searchable()
+                ->editOptionForm(Company::getForm())
+                ->relationship('company', 'name', modifyQueryUsing: function (Builder $query, Forms\Get $get) {
+                    return $query->where('id', $get('company_id'));
+                })
+                ->createOptionForm(Company::getForm())
                 ->getSearchResultsUsing(fn(string $search): array => Company::where('name', 'like', "%{$search}%")->limit(50)->pluck('name', 'id')->toArray())
                 ->getOptionLabelUsing(fn($value): ?string => Company::find($value)?->name),
+            TextInput::make('password')
+                ->password()
+                ->dehydrateStateUsing(fn($state) => Hash::make($state))
+                ->dehydrated(fn($state) => filled($state))
+                ->required(fn(string $context): bool => $context === 'create')
+                ->maxLength(150)
+                ->columnSpan('full'),
+            Select::make('lang')
+                ->required()
+                //->maxWidth('w-32')
+                ->inlineLabel()
+                ->default('fr')
+                ->options(LangEnum::class)
+                ->columnSpan([
+                    'default' => 1,
+                    'sm' => 2,
+                    'xl' => 2,
+                    '2xl' => 2,
+                ]),
+            TextInput::make('code')
+                ->inlineLabel()
+                ->maxLength(25)
+                ->default(null)
+                ->columnSpan([
+                    'default' => 1,
+                    'sm' => 2,
+                    'xl' => 2,
+                    '2xl' => 2,
+                ]),
             MarkdownEditor::make('more_info')
-                    ->disableToolbarButtons(['heading', 'bold', 'italic', 'underline', 'strike', 'link', 'bulletedList', 'numberedList', 'alignment', 'blockQuote', 'codeBlock', 'horizontalLine', 'image', 'table', 'undo', 'redo', 'removeFormat'])
-                    ->maxLength(255)
-                    ->default(null)
+                ->disableToolbarButtons(['heading', 'bold', 'italic', 'underline', 'strike', 'link', 'bulletedList', 'numberedList', 'alignment', 'blockQuote', 'codeBlock', 'horizontalLine', 'image', 'table', 'undo', 'redo', 'removeFormat'])
+                ->maxLength(255)
+                ->default(null)
+                ->columnSpan('full'),
+            // Select::make('user_id')
+            //     ->hidden(function() use($userId){
+            //         return $userId ? true : false;
+            //     }),
         ];
     }
     public function getFilamentName(): string

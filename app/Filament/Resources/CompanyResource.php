@@ -5,13 +5,11 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\CompanyResource\Pages;
 use App\Filament\Resources\CompanyResource\RelationManagers;
 use App\Models\Company;
-use Filament\Forms;
+use Filament\Actions\DeleteAction;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class CompanyResource extends Resource
 {
@@ -29,31 +27,35 @@ class CompanyResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')
+                Tables\Columns\TextInputColumn::make('name')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('vat')
+                Tables\Columns\TextInputColumn::make('vat')
+                ->toggleable(isToggledHiddenByDefault: true)
                     ->searchable(),
-                Tables\Columns\TextColumn::make('phone')
+                Tables\Columns\TextInputColumn::make('phone')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('email')
+                Tables\Columns\TextInputColumn::make('email')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('country')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('city')
+                Tables\Columns\TextInputColumn::make('city')
+                ->toggleable(isToggledHiddenByDefault: true)
                     ->searchable(),
-                Tables\Columns\TextColumn::make('zip')
+                Tables\Columns\TextInputColumn::make('zip')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('street')
+                Tables\Columns\TextInputColumn::make('street')
+                ->toggleable(isToggledHiddenByDefault: true)
                     ->searchable(),
-                Tables\Columns\TextColumn::make('street_number')
+                Tables\Columns\TextInputColumn::make('street_number')
+                ->toggleable(isToggledHiddenByDefault: true)
                     ->searchable(),
-                Tables\Columns\TextColumn::make('street_box')
+                Tables\Columns\TextInputColumn::make('street_box')
+                ->toggleable(isToggledHiddenByDefault: true)
                     ->searchable(),
-                Tables\Columns\IconColumn::make('active')
-                    ->boolean(),
-                Tables\Columns\IconColumn::make('is_agency')
-                    ->boolean(),
+                Tables\Columns\ToggleColumn::make('active'),
+                Tables\Columns\ToggleColumn::make('is_agency'),
                 Tables\Columns\TextColumn::make('partner')
+                ->toggleable(isToggledHiddenByDefault: true)
                     ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
@@ -68,8 +70,9 @@ class CompanyResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
-            ])
+                Tables\Actions\EditAction::make()->hiddenLabel(),
+                Tables\Actions\DeleteAction::make()->hiddenLabel(),
+            ],position: Tables\Enums\ActionsPosition::BeforeColumns)
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
@@ -80,7 +83,7 @@ class CompanyResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            RelationManagers\UsersRelationManager::class,
         ];
     }
 
@@ -89,7 +92,7 @@ class CompanyResource extends Resource
         return [
             'index' => Pages\ListCompanies::route('/'),
             'create' => Pages\CreateCompany::route('/create'),
-           // 'edit' => Pages\EditCompany::route('/{record}/edit'),
+            'edit' => Pages\EditCompany::route('/{record}/edit'),
         ];
     }
 }
