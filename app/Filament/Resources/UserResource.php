@@ -22,7 +22,7 @@ class UserResource extends Resource
 {
     protected static ?string $model = User::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-users';
 
     public static function form(Form $form): Form
     {
@@ -31,19 +31,19 @@ class UserResource extends Resource
                 ComponentsSection::make('Profile')
                     ->description('User ID: #')
                     ->collapsible()
-                    ->schema(User::getForm())->columns([
-                'default' => 2,
-                'sm' => 4,
-                'xl' => 4,
-                '2xl' => 4,
-            ])]);
+                    ->schema(User::getForm())->columns(1)
+            ]);
     }
 
     public static function table(Table $table): Table
     {
         return $table
             ->columns([
-                Tables\Columns\ImageColumn::make('avatar')->circular(),
+                Tables\Columns\ImageColumn::make('avatar')
+                ->circular()
+                ->defaultImageUrl(function ($record) {
+                    return 'https://ui-avatars.com/api/?background=0D8ABC&color=fff&name=' . urlencode($record->firstname);
+                }),
                 Tables\Columns\TextInputColumn::make('firstname')
                     ->searchable(),
                 Tables\Columns\TextInputColumn::make('lastname')
@@ -78,6 +78,7 @@ class UserResource extends Resource
                 Tables\Columns\TextColumn::make('company.name')
                     ->sortable(),
                 Tables\Columns\ToggleColumn::make('active'),
+                //Tables\Columns\IconColumn::make('active')->boolean(),
                 Tables\Columns\ToggleColumn::make('optin_newsletter'),
                 Tables\Columns\TextColumn::make('code')
                     ->searchable(),
