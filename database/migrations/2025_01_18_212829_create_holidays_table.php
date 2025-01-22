@@ -24,8 +24,8 @@ return new class extends Migration
             $table->tinyInteger('number_people',false)->unsigned()->nullable();
             $table->tinyInteger('stars')->nullable()->index();
             $table->boolean('active')->default(false)->index();
-            $table->string('external_id',50)->index();
-            $table->boolean('read_trip')->index();
+            $table->string('external_id',50)->index()->nullable();
+            $table->boolean('reader_trip')->index();
             $table->boolean('flash_deal')->index();
             $table->foreign('user_id')->references('id')->on('users')->onUpdate('cascade')->onDelete('cascade');
             $table->foreign('holiday_type_id')->references('id')->on('holiday_types')->onUpdate('cascade');

@@ -30,6 +30,7 @@ class UsersRelationManager extends RelationManager
     public function table(Table $table): Table
     {
         return $table
+            ->paginated(false)
             ->recordTitleAttribute('firstname')
             ->columns([
                 Tables\Columns\TextInputColumn::make('firstname'),

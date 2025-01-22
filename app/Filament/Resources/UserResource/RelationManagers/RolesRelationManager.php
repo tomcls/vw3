@@ -14,19 +14,20 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 class RolesRelationManager extends RelationManager
 {
     protected static string $relationship = 'roles';
-    public function isReadOnly ():bool
+    public function isReadOnly(): bool
     {
-         return false;
+        return false;
     }
     public function form(Form $form): Form
     {
         return $form
-            ->schema( UserRole::getForm($this->getOwnerRecord()->id));
+            ->schema(UserRole::getForm($this->getOwnerRecord()->id));
     }
 
     public function table(Table $table): Table
     {
         return $table
+            ->paginated(false)
             ->recordTitleAttribute('Title')
             ->columns([
                 Tables\Columns\TextColumn::make('role'),
