@@ -10,6 +10,10 @@ class EditHoliday extends EditRecord
 {
     protected static string $resource = HolidayResource::class;
 
+    public function hasCombinedRelationManagerTabsWithContent(): bool
+    {
+        return false;
+    }
     protected function getHeaderActions(): array
     {
         return [

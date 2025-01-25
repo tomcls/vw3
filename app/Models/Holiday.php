@@ -40,6 +40,16 @@ class Holiday extends Model
     {
         return $this->hasMany(HolidayTitle::class, 'holiday_id', 'id');
     }
+
+    public function description($lang = null)
+    {
+        return $this->hasOne(HolidayDescription::class)->where('lang', $lang ?? App::currentLocale());
+    }
+
+    public function descriptions($lang = null): HasMany
+    {
+        return $this->hasMany(HolidayDescription::class);
+    }
     public function cover()
     {
         return $this->hasOne(HolidayImage::class)->orderBy('sort');
@@ -48,19 +58,19 @@ class Holiday extends Model
     {
         return [
             Group::make()->columns(3)->schema([
-                    Toggle::make('reader_trip'),
-                    Toggle::make('flash_deal'),
-                    TextInput::make('stars')
-                        ->numeric()
-                        ->inlineLabel()
-                        ->maxLength(1)
-                        ->columnSpan([
-                            'default' => 'full',
-                            'sm' => 1,
-                            'xl' => 1,
-                            '2xl' => 1,
-                        ]),
-                
+                Toggle::make('reader_trip'),
+                Toggle::make('flash_deal'),
+                TextInput::make('stars')
+                    ->numeric()
+                    ->inlineLabel()
+                    ->maxLength(1)
+                    ->columnSpan([
+                        'default' => 'full',
+                        'sm' => 1,
+                        'xl' => 1,
+                        '2xl' => 1,
+                    ]),
+
             ])->columnSpanFull(),
             Group::make()->columns(2)->schema([
                 Select::make('user_id')
@@ -119,6 +129,9 @@ class Holiday extends Model
                     ->required()
                     ->numeric(),
             ]),
+            TextInput::make('geocode')
+            ->label('Location')
+            ->placeholder('Find a location: Sousse Tunisie'),
             Actions::make([
                 Action::make('star')
                     ->label('Fill with Factory Data')

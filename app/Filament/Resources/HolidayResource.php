@@ -4,11 +4,14 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\HolidayResource\Pages;
 use App\Filament\Resources\HolidayResource\RelationManagers;
+use App\Filament\Resources\HolidayResource\RelationManagers\DescriptionsRelationManager;
 use App\Filament\Resources\HolidayResource\RelationManagers\TitlesRelationManager;
 use App\Models\Holiday;
 use Filament\Forms;
 use Filament\Forms\Components\Section;
+use Filament\Forms\Components\Tabs;
 use Filament\Forms\Form;
+use Filament\Resources\RelationManagers\RelationGroup;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
@@ -25,43 +28,54 @@ class HolidayResource extends Resource
     public static function form(Form $form): Form
     {
         return $form
-        ->schema([
-            Section::make('Holiday')
-                ->description("Holiday ID: # {$form->getRecord()->id}")
-                ->collapsible()
-                ->schema(Holiday::getForm())
-        ]);
+            ->schema([
+                Tabs::make('Tabs')
+                    ->tabs([
+                        Tabs\Tab::make("Holiday ID: # {$form->getRecord()->id}")
+                            ->schema(Holiday::getForm($form->getRecord()->id)),
+                        Tabs\Tab::make('Tab 2')
+                            ->schema([
+                                // ...
+                            ]),
+                        Tabs\Tab::make('Tab 3')
+                            ->schema([
+                                // ...
+                            ]),
+                    ])->columnSpanFull()->persistTabInQueryString(),
+                
+            ]);
     }
-    public function isReadOnly ():bool
+    public function isReadOnly(): bool
     {
-         return false;
+        return false;
     }
+
     public static function table(Table $table): Table
     {
         return $table
             ->columns([
                 TextColumn::make('id'),
                 TextColumn::make('title.name')
-                ->sortable(),
+                    ->sortable(),
                 TextColumn::make('type.code')
-                ->sortable(),
+                    ->sortable(),
                 TextColumn::make('longitude')
-                ->sortable()
-                ->toggleable(isToggledHiddenByDefault: true),
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('latitude')
-                ->sortable()
-                ->toggleable(isToggledHiddenByDefault: true),
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('stars'),
                 TextColumn::make('reader_trip')
-                ->sortable(),
+                    ->sortable(),
                 TextColumn::make('flash_deal')
-                ->sortable(),
+                    ->sortable(),
                 TextColumn::make('created_at')
-                ->sortable()
-                ->toggleable(isToggledHiddenByDefault: true),
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('updated_at')
-                ->sortable()
-                ->toggleable(isToggledHiddenByDefault: true),
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 //
@@ -79,7 +93,11 @@ class HolidayResource extends Resource
     public static function getRelations(): array
     {
         return [
+            // RelationGroup::make('Contacts', [
+                
+            // ]),
             TitlesRelationManager::class,
+            DescriptionsRelationManager::class
         ];
     }
 
