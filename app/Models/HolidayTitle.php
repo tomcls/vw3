@@ -21,6 +21,25 @@ class HolidayTitle extends Model
 {
     /** @use HasFactory<\Database\Factories\HolidayTitleFactory> */
     use HasFactory;
+    /**
+     * @var string
+     */
+    protected $table = 'holiday_titles';
+
+    public $lang;
+
+    protected $fillable = [
+        'lang',
+        'name',
+        'slug',
+        'privilege',
+        'holiday_id'
+    ];
+
+    public function __construct($lang = null)
+    {
+        $this->lang = $lang;
+    }
     public function holiday(): BelongsTo
     {
         return $this->belongsTo(Holiday::class);
@@ -46,15 +65,9 @@ class HolidayTitle extends Model
                             'class' => 'w-12' // if you want to constrain the selects size, depending on your usecase
                         ])
                         ->default(App::currentLocale())
-                        ->options(function () {
-                            return array_column(LangEnum::cases(), 'value');
-                            // $values = [];
-                            // foreach (LangEnum::cases()->toArray() as $value) {
-                            //     $values[$value->name] = $value->value;
-                            // }
-                            // return $values;
-                        })
+                        ->options(LangEnum::class)
                         ->selectablePlaceholder(false)
+
                 )->columnSpanFull(),
             // TextInput::make('name')
             //     ->debounce(1000)
@@ -84,7 +97,11 @@ class HolidayTitle extends Model
                 ->maxLength(255)->columnSpanFull(),
             Hidden::make('is_slug_changed_manually')
                 ->default(false)
-                ->dehydrated(false),
+                ->dehydrated(true),
+            Select::make('lang')
+                ->options(LangEnum::class)
+                ->unique()
+                ->required(),
             TextInput::make('privilege')
                 ->default(null)
                 ->maxLength(255)

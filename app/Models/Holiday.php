@@ -36,17 +36,30 @@ class Holiday extends Model
     {
         return $this->hasOne(HolidayTitle::class)->where('lang', $lang ?? App::currentLocale());
     }
+    public function holidayTitle($lang = null): HasOne
+    {
+        return $this->hasOne(HolidayTitle::class)->where('lang', $lang ?? App::currentLocale());
+    }
     public function titles(): HasMany
     {
         return $this->hasMany(HolidayTitle::class, 'holiday_id', 'id');
     }
 
-    public function description($lang = null)
+    public function holidayTitles(): HasMany
     {
-        return $this->hasOne(HolidayDescription::class)->where('lang', $lang ?? App::currentLocale());
+        return $this->hasMany(HolidayTitle::class, 'holiday_id', 'id');
     }
 
-    public function descriptions($lang = null): HasMany
+    public function description()
+    {
+        return $this->hasOne(HolidayDescription::class)->where('lang', App::currentLocale());
+    }
+
+    public function descriptions(): HasMany
+    {
+        return $this->hasMany(HolidayDescription::class);
+    }
+    public function holidayDescriptions(): HasMany
     {
         return $this->hasMany(HolidayDescription::class);
     }
@@ -112,13 +125,13 @@ class Holiday extends Model
             Group::make()->columns(2)->schema([
                 DatePicker::make('startdate')
                     //->format('d-m-Y')
-                    ->timezone('Europe/Brussels')
-                    ->native(false)
+                 //   ->timezone('Europe/Brussels')
+                    ->native(true)
                     ->required(),
                 DatePicker::make('enddate')
                     // ->format('d-m-Y')
-                    ->native(false)
-                    ->timezone('Europe/Brussels')
+                    ->native(true)
+                  //  ->timezone('Europe/Brussels')
                     ->required(),
             ]),
             Group::make()->columns(2)->schema([
@@ -131,6 +144,7 @@ class Holiday extends Model
             ]),
             TextInput::make('geocode')
             ->label('Location')
+            ->dehydrated(false)
             ->placeholder('Find a location: Sousse Tunisie'),
             Actions::make([
                 Action::make('star')

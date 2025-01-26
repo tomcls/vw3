@@ -3,21 +3,20 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\HolidayResource\Pages;
-use App\Filament\Resources\HolidayResource\RelationManagers;
-use App\Filament\Resources\HolidayResource\RelationManagers\DescriptionsRelationManager;
+use App\Filament\Resources\HolidayResource\Pages\HolidayPage;
 use App\Filament\Resources\HolidayResource\RelationManagers\TitlesRelationManager;
+use App\Forms\Components\holidayTitleForm;
 use App\Models\Holiday;
-use Filament\Forms;
+use App\Models\HolidayDescription;
+use App\Models\HolidayTitle;
+use Filament\Forms\Components\Livewire;
+use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Section;
-use Filament\Forms\Components\Tabs;
 use Filament\Forms\Form;
-use Filament\Resources\RelationManagers\RelationGroup;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class HolidayResource extends Resource
 {
@@ -29,27 +28,102 @@ class HolidayResource extends Resource
     {
         return $form
             ->schema([
-                Tabs::make('Tabs')
-                    ->tabs([
-                        Tabs\Tab::make("Holiday ID: # {$form->getRecord()->id}")
-                            ->schema(Holiday::getForm($form->getRecord()->id)),
-                        Tabs\Tab::make('Tab 2')
-                            ->schema([
-                                // ...
-                            ]),
-                        Tabs\Tab::make('Tab 3')
-                            ->schema([
-                                // ...
-                            ]),
-                    ])->columnSpanFull()->persistTabInQueryString(),
-                
+                Section::make('Holiday')
+                    ->description("Holiday ID: # {$form->getRecord()->id}")
+                    ->collapsible()
+                    ->schema(Holiday::getForm()),
+                    holidayTitleForm::make('holidayTitle')->columnSpanFull()
+                    
+                // Section::make("title")
+                //     ->relationship('holidayTitle')
+                //     ->collapsible()
+                //     ->schema(HolidayTitle::getForm($form->getRecord()->id)),
+
+                // Section::make('Titles')
+                //     ->headerActions([
+                //         Action::make('reset')
+                //             ->modalHeading('Are you sure?')
+                //             ->modalDescription('All existing items will be removed from the order.')
+                //             ->requiresConfirmation()
+                //             ->color('danger')
+                //             ->action(fn(Forms\Set $set) => $set('items', [])),
+                //     ])
+                //     ->schema([
+                //         static::getTitlesRepeater(),
+                //     ])->collapsible(),
+                // Section::make('Descriptions')
+                //     ->headerActions([
+                //         Action::make('reset')
+                //             ->modalHeading('Are you sure?')
+                //             ->modalDescription('All existing items will be removed from the order.')
+                //             ->requiresConfirmation()
+                //             ->color('danger')
+                //             ->action(fn(Forms\Set $set) => $set('items', [])),
+                //     ])
+                //     ->schema([
+                //         static::getDescriptionsRepeater(),
+                //     ])->collapsible(),
+                // Form::make('title')
+                //     ->relationship()
+                //     ->collapsible()
+                //     ->schema(HolidayTitle::getForm($form->getRecord()->id, App::currentLocale())),
+                // Section::make('Description')
+                //         ->collapsible()
+                //         ->schema(HolidayDescription::getForm($form->getRecord()->id,App::currentLocale())),
+
             ]);
     }
     public function isReadOnly(): bool
     {
         return false;
     }
+    public static function getTitlesRepeater(): Repeater
+    {
+        return Repeater::make('holidayTitles')
+            ->relationship()
+            ->schema(HolidayTitle::getForm())
+            // ->extraItemActions([
+            //     Action::make('openProduct')
+            //         ->tooltip('Open product')
+            //         ->icon('heroicon-m-arrow-top-right-on-square')
+            //         ->url(function (array $arguments, Repeater $component): ?string {
+            //             return 'text';
+            //         }, shouldOpenInNewTab: true)
+            //         ->hidden(fn (array $arguments, Repeater $component): bool => blank($component->getRawItemState($arguments['item'])['shop_product_id'])),
+            // ])
+            //  ->orderColumn('sort')
+            ->defaultItems(1)
+            ->hiddenLabel()
+            ->columns([
+                'md' => 10,
+            ])->addActionLabel('Add title')
+            ->cloneable()
+            ->required();
+    }
 
+    public static function getDescriptionsRepeater(): Repeater
+    {
+        return Repeater::make('holidayDescriptions')
+            ->relationship()
+            ->schema(HolidayDescription::getForm())
+            // ->extraItemActions([
+            //     Action::make('openProduct')
+            //         ->tooltip('Open product')
+            //         ->icon('heroicon-m-arrow-top-right-on-square')
+            //         ->url(function (array $arguments, Repeater $component): ?string {
+            //             return 'text';
+            //         }, shouldOpenInNewTab: true)
+            //         ->hidden(fn (array $arguments, Repeater $component): bool => blank($component->getRawItemState($arguments['item'])['shop_product_id'])),
+            // ])
+            //  ->orderColumn('sort')
+            ->defaultItems(1)
+            ->hiddenLabel()
+            ->columns([
+                'md' => 10,
+            ])->addActionLabel('Add a description')
+            ->cloneable()
+            ->required();
+    }
     public static function table(Table $table): Table
     {
         return $table
@@ -94,10 +168,10 @@ class HolidayResource extends Resource
     {
         return [
             // RelationGroup::make('Contacts', [
-                
+
             // ]),
             TitlesRelationManager::class,
-            DescriptionsRelationManager::class
+            // DescriptionsRelationManager::class
         ];
     }
 
@@ -107,6 +181,7 @@ class HolidayResource extends Resource
             'index' => Pages\ListHolidays::route('/'),
             'create' => Pages\CreateHoliday::route('/create'),
             'edit' => Pages\EditHoliday::route('/{record}/edit'),
+            'manage' => HolidayPage::route('/{record}/manage'),
         ];
     }
 }

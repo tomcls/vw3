@@ -24,6 +24,11 @@ class HolidayTitleResource extends Resource
         return $form
             ->schema(HolidayTitle::getForm());
     }
+    
+    public function isReadOnly(): bool
+    {
+        return false;
+    }
 
     public static function table(Table $table): Table
     {

@@ -16,9 +16,9 @@ enum LangEnum: string implements HasLabel
         // or
     
         return match ($this) {
-            self::en => __('en'),
-            self::fr => __('fr'),
-            self::nl => __('nl'),
+            self::en => 'English',
+            self::fr => 'Français',
+            self::nl => 'Dutch',
         };
     }
 }
